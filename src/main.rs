@@ -1,15 +1,30 @@
 use std::fs;
 
-use aoc_2022::{solutions::day1::{Day1Part1, Day1Part2}, solution::Solution};
+use aoc_2022::{
+    solution::Solution,
+    solutions::{
+        day1::{Day1Part1, Day1Part2},
+        day2::{Day2Part1, Day2Part2},
+    },
+};
 
 fn main() {
     day1();
+    day2();
 }
 
 fn day1() {
     let input = fs::read_to_string("data/day1.txt").expect("read failed");
     let s = Day1Part1 {};
     s.run(&input);
-    let s2 = Day1Part2 {};
-    s2.run(&input);
+    let s = Day1Part2 {};
+    s.run(&input);
+}
+
+fn day2() {
+    let input = fs::read_to_string("data/day2.txt").expect("read failed");
+    let s = Day2Part1 {};
+    s.run(&input);
+    let s = Day2Part2 {};
+    s.run(&input);
 }
