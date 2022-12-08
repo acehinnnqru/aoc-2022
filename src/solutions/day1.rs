@@ -17,6 +17,7 @@ fn cal_max_n(lines: Lines, n: usize) -> Vec<i32> {
             for i in 0..candidates.len() {
                 if cur > candidates[i] {
                     candidates[i] = cur;
+                    break;
                 }
             }
             cur = 0;
@@ -28,8 +29,17 @@ fn cal_max_n(lines: Lines, n: usize) -> Vec<i32> {
 }
 
 impl Solution for Day1Part1 {
-    fn run(&self, input: String) {
+    fn run(&self, input: &String) {
         let ret = cal_max_n(input.lines(), 1);
         println!("result of day 1 part 1 is: {}", ret.iter().sum::<i32>());
+    }
+}
+
+pub struct Day1Part2 {}
+
+impl Solution for Day1Part2 {
+    fn run(&self, input: &String) {
+        let ret = cal_max_n(input.lines(), 3);
+        println!("result of day 1 part 2 is: {}", ret.iter().sum::<i32>());
     }
 }
