@@ -2,8 +2,6 @@ use std::{collections::HashSet, str::Lines};
 
 use crate::solution::Solution;
 
-pub struct Day3Part1 {}
-
 fn find_same_char(chars: &Vec<char>) -> char {
     let p = chars.len() / 2;
 
@@ -28,7 +26,13 @@ fn priorities(c: char) -> i32 {
     (c as u8 - 64) as i32 + 26
 }
 
-impl Day3Part1 {
+trait Day3 {
+    fn process(&self, lines: Lines) -> i32;
+}
+
+pub struct Day3Part1 {}
+
+impl Day3 for Day3Part1 {
     fn process(&self, lines: Lines) -> i32 {
         let mut total = 0;
         for line in lines {
@@ -49,7 +53,7 @@ impl Solution for Day3Part1 {
 
 pub struct Day3Part2 {}
 
-impl Day3Part2 {
+impl Day3 for Day3Part2 {
     fn process(&self, lines: Lines) -> i32 {
         let l: Vec<String> = lines.map(String::from).collect();
         let groups: Vec<&[String]> = l.chunks(3).collect();

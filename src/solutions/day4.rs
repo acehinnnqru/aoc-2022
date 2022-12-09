@@ -45,14 +45,7 @@ trait Day4 {
     }
 }
 
-impl<T: Day4> Solution for T {
-    fn run(&self, input: &String) -> i32 {
-        self.process(input)
-    }
-}
-
 pub struct Day4Part1 {}
-pub struct Day4Part2 {}
 
 impl Day4 for Day4Part1 {
     fn compare_func(&self) -> fn(&String) -> bool {
@@ -60,8 +53,22 @@ impl Day4 for Day4Part1 {
     }
 }
 
+impl Solution for Day4Part1 {
+    fn run(&self, input: &String) -> i32 {
+        self.process(input)
+    }
+}
+
+pub struct Day4Part2 {}
+
 impl Day4 for Day4Part2 {
     fn compare_func(&self) -> fn(&String) -> bool {
         be_overlap
+    }
+}
+
+impl Solution for Day4Part2 {
+    fn run(&self, input: &String) -> i32 {
+        self.process(input)
     }
 }
