@@ -1,7 +1,5 @@
 use crate::solution::Solution;
 
-pub struct Day4Part1 {}
-
 fn to_interval(s: &str) -> (i32, i32) {
     let interval: Vec<&str> = s.split('-').collect();
     let min: i32 = interval[0].parse().unwrap();
@@ -32,6 +30,7 @@ fn be_overlap(line: &String) -> bool {
     if (lmax < rmin) || (rmax < lmin) {
         return false;
     }
+
     true
 }
 
@@ -46,6 +45,15 @@ trait Day4 {
     }
 }
 
+impl<T: Day4> Solution for T {
+    fn run(&self, input: &String) -> i32 {
+        self.process(input)
+    }
+}
+
+pub struct Day4Part1 {}
+pub struct Day4Part2 {}
+
 impl Day4 for Day4Part1 {
     fn compare_func(&self) -> fn(&String) -> bool {
         be_fully_contained
@@ -55,19 +63,5 @@ impl Day4 for Day4Part1 {
 impl Day4 for Day4Part2 {
     fn compare_func(&self) -> fn(&String) -> bool {
         be_overlap
-    }
-}
-
-impl Solution for Day4Part1 {
-    fn run(&self, input: &String) -> i32 {
-        self.process(input)
-    }
-}
-
-pub struct Day4Part2 {}
-
-impl Solution for Day4Part2 {
-    fn run(&self, input: &String) -> i32 {
-        self.process(input)
     }
 }
