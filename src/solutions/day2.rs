@@ -50,7 +50,7 @@ fn tolose(opponent: &u8) -> u8 {
 }
 
 fn todraw(opponent: &u8) -> u8 {
-    return *opponent;
+    *opponent
 }
 
 impl Day2 for Day2Part1 {}
