@@ -35,13 +35,32 @@ fn be_overlap(line: &String) -> bool {
     true
 }
 
-impl Solution for Day4Part1 {
-    fn run(&self, input: &String) -> i32 {
+trait Day4 {
+    fn compare_func(&self) -> fn(&String) -> bool;
+    fn process(&self, input: &String) -> i32 {
         input
             .lines()
-            .map(|x| be_fully_contained(&String::from(x)))
+            .map(|x| self.compare_func()(&String::from(x)))
             .filter(|x| *x)
             .count() as i32
+    }
+}
+
+impl Day4 for Day4Part1 {
+    fn compare_func(&self) -> fn(&String) -> bool {
+        be_fully_contained
+    }
+}
+
+impl Day4 for Day4Part2 {
+    fn compare_func(&self) -> fn(&String) -> bool {
+        be_overlap
+    }
+}
+
+impl Solution for Day4Part1 {
+    fn run(&self, input: &String) -> i32 {
+        self.process(input)
     }
 }
 
@@ -49,10 +68,6 @@ pub struct Day4Part2 {}
 
 impl Solution for Day4Part2 {
     fn run(&self, input: &String) -> i32 {
-        input
-            .lines()
-            .map(|x| be_overlap(&String::from(x)))
-            .filter(|x| *x)
-            .count() as i32
+        self.process(input)
     }
 }
