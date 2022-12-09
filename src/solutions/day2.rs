@@ -12,23 +12,23 @@ trait Day2 {
             let opponent = bs[0];
             let me = f(&opponent, &bs[2]);
 
-            score += self.point(&opponent, &me);
+            score += point(&opponent, &me);
         }
 
         score
     }
+}
 
-    fn point(&self, opponent: &u8, me: &u8) -> i32 {
-        let choice_point = me - b'A' + 1;
-        if opponent == me {
-            return (choice_point + 3) as i32;
-        }
-        if *me == towin(opponent) {
-            return (choice_point + 6) as i32;
-        }
-
-        choice_point as i32
+fn point(opponent: &u8, me: &u8) -> i32 {
+    let choice_point = me - b'A' + 1;
+    if opponent == me {
+        return (choice_point + 3) as i32;
     }
+    if *me == towin(opponent) {
+        return (choice_point + 6) as i32;
+    }
+
+    choice_point as i32
 }
 
 fn towin(opponent: &u8) -> u8 {
@@ -77,7 +77,7 @@ impl Day2Part2 {}
 impl Day2 for Day2Part2 {}
 
 impl Solution for Day2Part2 {
-    fn run(& self, input: &str) -> String {
+    fn run(&self, input: &str) -> String {
         let f = |x: &u8, y: &u8| -> u8 {
             match y {
                 b'X' => tolose(x),

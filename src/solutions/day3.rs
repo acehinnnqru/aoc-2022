@@ -4,9 +4,7 @@ use crate::solution::Solution;
 
 fn build_charset(chars: Vec<char>) -> HashSet<char> {
     let mut charset = HashSet::<char>::new();
-    for ch in chars {
-        charset.insert(ch);
-    }
+    chars.iter().for_each(|x| {charset.insert(*x);});
 
     charset
 }
