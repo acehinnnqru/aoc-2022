@@ -2,19 +2,26 @@ use std::{collections::HashSet, str::Lines};
 
 use crate::solution::Solution;
 
+fn build_charset(chars: Vec<char>) -> HashSet<char> {
+    let mut charset = HashSet::<char>::new();
+    for ch in chars {
+        charset.insert(ch);
+    }
+
+    charset
+}
+
 fn find_same_char(chars: &Vec<char>) -> char {
     let p = chars.len() / 2;
 
-    let mut char_set = HashSet::<char>::new();
-    for i in 0..p {
-        char_set.insert(chars[i]);
-    }
+    let charset = build_charset(chars.to_vec());
 
     for i in p..chars.len() {
-        if char_set.contains(&chars[i]) {
+        if charset.contains(&chars[i]) {
             return chars[i];
         }
     }
+
     unimplemented!()
 }
 
@@ -53,6 +60,13 @@ impl Solution for Day3Part1 {
 
 pub struct Day3Part2 {}
 
+fn update_charset(group: &[String], charset: &mut HashSet<char>) {
+    for item in group {
+        let temp_charset = build_charset(item.chars().collect());
+        charset.retain(|x| temp_charset.contains(x));
+    }
+}
+
 impl Day3 for Day3Part2 {
     fn process(&self, lines: Lines) -> i32 {
         let l: Vec<String> = lines.map(String::from).collect();
@@ -60,22 +74,13 @@ impl Day3 for Day3Part2 {
 
         let mut points = 0;
         for group in groups {
-            let mut charset = HashSet::<char>::new();
-            for ch in group[0].chars() {
-                charset.insert(ch);
-            }
-            for i in 1..group.len() {
-                let mut new_charset = HashSet::<char>::new();
-                for ch in group[i].chars() {
-                    if charset.contains(&ch) {
-                        new_charset.insert(ch);
-                    }
-                }
-                charset = new_charset;
-            }
+            let mut charset = build_charset(group[0].chars().collect());
+            update_charset(&group[1..], &mut charset);
+
             if charset.len() > 1 {
                 unimplemented!()
             }
+
             let item = charset.iter().next().unwrap();
             points += priorities(*item)
         }
