@@ -69,8 +69,6 @@ impl Recorder {
     }
 }
 
-pub struct Day6Part1 {}
-
 fn first_packet(buffer: &str, n: usize) -> usize {
     let mut recorder = Recorder::new(n);
 
@@ -84,8 +82,18 @@ fn first_packet(buffer: &str, n: usize) -> usize {
     unimplemented!()
 }
 
+pub struct Day6Part1 {}
+
 impl Solution for Day6Part1 {
     fn run(&self, input: &str) -> String {
         first_packet(input, 4).to_string()
+    }
+}
+
+pub struct Day6Part2 {}
+
+impl Solution for Day6Part2 {
+    fn run(&self, input: &str) -> String {
+        first_packet(input, 14).to_string()
     }
 }
