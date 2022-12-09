@@ -8,7 +8,7 @@ fn to_interval(s: &str) -> (i32, i32) {
     (min, max)
 }
 
-fn split2intervals(line: &String) -> (i32, i32, i32, i32) {
+fn split2intervals(line: &str) -> (i32, i32, i32, i32) {
     let splits: Vec<&str> = line.split(',').collect();
     let (left_min, left_max) = to_interval(splits[0]);
     let (right_min, right_max) = to_interval(splits[1]);
@@ -16,7 +16,7 @@ fn split2intervals(line: &String) -> (i32, i32, i32, i32) {
     (left_min, left_max, right_min, right_max)
 }
 
-fn be_fully_contained(line: &String) -> bool {
+fn be_fully_contained(line: &str) -> bool {
     let (lmin, lmax, rmin, rmax) = split2intervals(line);
     if (lmin <= rmin && lmax >= rmax) || (rmin <= lmin && rmax >= lmax) {
         return true;
@@ -25,7 +25,7 @@ fn be_fully_contained(line: &String) -> bool {
     false
 }
 
-fn be_overlap(line: &String) -> bool {
+fn be_overlap(line: &str) -> bool {
     let (lmin, lmax, rmin, rmax) = split2intervals(line);
     if (lmax < rmin) || (rmax < lmin) {
         return false;
@@ -35,8 +35,8 @@ fn be_overlap(line: &String) -> bool {
 }
 
 trait Day4 {
-    fn compare_func(&self) -> fn(&String) -> bool;
-    fn process(&self, input: &String) -> String {
+    fn compare_func(&self) -> fn(&str) -> bool;
+    fn process(&self, input: &str) -> String {
         input
             .lines()
             .map(|x| self.compare_func()(&String::from(x)))
@@ -49,13 +49,13 @@ trait Day4 {
 pub struct Day4Part1 {}
 
 impl Day4 for Day4Part1 {
-    fn compare_func(&self) -> fn(&String) -> bool {
+    fn compare_func(&self) -> fn(&str) -> bool {
         be_fully_contained
     }
 }
 
 impl Solution for Day4Part1 {
-    fn run(&self, input: &String) -> String {
+    fn run(&self, input: &str) -> String {
         self.process(input)
     }
 }
@@ -63,13 +63,13 @@ impl Solution for Day4Part1 {
 pub struct Day4Part2 {}
 
 impl Day4 for Day4Part2 {
-    fn compare_func(&self) -> fn(&String) -> bool {
+    fn compare_func(&self) -> fn(&str) -> bool {
         be_overlap
     }
 }
 
 impl Solution for Day4Part2 {
-    fn run(&self, input: &String) -> String {
+    fn run(&self, input: &str) -> String {
         self.process(input)
     }
 }

@@ -56,7 +56,7 @@ fn todraw(opponent: &u8) -> u8 {
 impl Day2 for Day2Part1 {}
 
 impl Solution for Day2Part1 {
-    fn run(&self, input: &String) -> String {
+    fn run(&self, input: &str) -> String {
         let f = |_: &u8, y: &u8| -> u8 {
             match y {
                 b'X' => b'A',
@@ -77,7 +77,7 @@ impl Day2Part2 {}
 impl Day2 for Day2Part2 {}
 
 impl Solution for Day2Part2 {
-    fn run(& self, input: &String) -> String {
+    fn run(& self, input: &str) -> String {
         let f = |x: &u8, y: &u8| -> u8 {
             match y {
                 b'X' => tolose(x),

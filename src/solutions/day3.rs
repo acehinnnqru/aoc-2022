@@ -16,9 +16,9 @@ fn find_same_char(chars: &Vec<char>) -> char {
 
     let charset = build_charset(chars.to_vec());
 
-    for i in p..chars.len() {
-        if charset.contains(&chars[i]) {
-            return chars[i];
+    for item in chars.iter().skip(p) {
+        if charset.contains(item) {
+            return *item;
         }
     }
 
@@ -53,7 +53,7 @@ impl Day3 for Day3Part1 {
 }
 
 impl Solution for Day3Part1 {
-    fn run(&self, input: &String) -> String {
+    fn run(&self, input: &str) -> String {
         self.process(input.lines()).to_string()
     }
 }
@@ -90,7 +90,7 @@ impl Day3 for Day3Part2 {
 }
 
 impl Solution for Day3Part2 {
-    fn run(&self, input: &String) -> String {
+    fn run(&self, input: &str) -> String {
         self.process(input.lines()).to_string()
     }
 }

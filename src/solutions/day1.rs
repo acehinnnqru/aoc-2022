@@ -52,7 +52,7 @@ fn cal_max_n(lines: Lines, n: usize) -> i32 {
 }
 
 impl Solution for Day1Part1 {
-    fn run(&self, input: &String) -> String {
+    fn run(&self, input: &str) -> String {
         cal_max_n(input.lines(), 1).to_string()
     }
 }
@@ -60,7 +60,7 @@ impl Solution for Day1Part1 {
 pub struct Day1Part2 {}
 
 impl Solution for Day1Part2 {
-    fn run(&self, input: &String) -> String {
+    fn run(&self, input: &str) -> String {
         cal_max_n(input.lines(), 3).to_string()
     }
 }
