@@ -36,12 +36,13 @@ fn be_overlap(line: &String) -> bool {
 
 trait Day4 {
     fn compare_func(&self) -> fn(&String) -> bool;
-    fn process(&self, input: &String) -> i32 {
+    fn process(&self, input: &String) -> String {
         input
             .lines()
             .map(|x| self.compare_func()(&String::from(x)))
             .filter(|x| *x)
-            .count() as i32
+            .count()
+            .to_string()
     }
 }
 
@@ -54,7 +55,7 @@ impl Day4 for Day4Part1 {
 }
 
 impl Solution for Day4Part1 {
-    fn run(&self, input: &String) -> i32 {
+    fn run(&self, input: &String) -> String {
         self.process(input)
     }
 }
@@ -68,7 +69,7 @@ impl Day4 for Day4Part2 {
 }
 
 impl Solution for Day4Part2 {
-    fn run(&self, input: &String) -> i32 {
+    fn run(&self, input: &String) -> String {
         self.process(input)
     }
 }

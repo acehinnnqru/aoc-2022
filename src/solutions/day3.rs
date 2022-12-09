@@ -53,8 +53,8 @@ impl Day3 for Day3Part1 {
 }
 
 impl Solution for Day3Part1 {
-    fn run(&self, input: &String) -> i32 {
-        self.process(input.lines())
+    fn run(&self, input: &String) -> String {
+        self.process(input.lines()).to_string()
     }
 }
 
@@ -90,7 +90,7 @@ impl Day3 for Day3Part2 {
 }
 
 impl Solution for Day3Part2 {
-    fn run(&self, input: &String) -> i32 {
-        self.process(input.lines())
+    fn run(&self, input: &String) -> String {
+        self.process(input.lines()).to_string()
     }
 }
