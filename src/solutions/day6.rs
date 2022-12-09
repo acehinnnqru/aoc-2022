@@ -24,14 +24,11 @@ impl Recorder {
     }
 
     fn reduce(&mut self, ch: &char) {
-        match self.m.get_mut(ch) {
-            Some(x) => {
-                *x -= 1;
-                if *x == 0 {
-                    self.m.remove(ch);
-                }
-            },
-            None => {},
+        if let Some(x) = self.m.get_mut(ch) {
+            *x -= 1;
+            if *x == 0 {
+                self.m.remove(ch);
+            }
         }
     }
 

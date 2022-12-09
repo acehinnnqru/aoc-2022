@@ -51,10 +51,7 @@ fn extract_operations(source: &Vec<&str>) -> Vec<Operation> {
         let splits = line.split_whitespace();
         let mut t = vec![];
         for item in splits {
-            match item.parse::<usize>() {
-                Ok(x) => t.push(x),
-                _ => {}
-            };
+            if let Ok(x) = item.parse::<usize>() {t.push(x)}
         }
 
         Operation {
@@ -94,14 +91,14 @@ fn process_input(lines: Lines) -> (Vec<Vec<char>>, Vec<Operation>) {
     )
 }
 
-fn operate(origin: &mut Vec<Vec<char>>, operation: Operation) {
+fn operate(origin: &mut [Vec<char>], operation: Operation) {
     for _ in 0..operation.count {
         let val = origin[operation.from].pop().unwrap();
         origin[operation.to].push(val);
     }
 }
 
-fn multi_operate(origin: &mut Vec<Vec<char>>, operation: Operation) {
+fn multi_operate(origin: &mut [Vec<char>], operation: Operation) {
     let mut temp = vec![];
     for _ in 0..operation.count {
         temp.push(origin[operation.from].pop().unwrap());
@@ -119,7 +116,7 @@ fn peek_tops(origin: &Vec<Vec<char>>) -> String {
     s
 }
 
-type OperateFn = fn(origin: &mut Vec<Vec<char>>, operation: Operation);
+type OperateFn = fn(origin: &mut [Vec<char>], operation: Operation);
 
 trait Day5 {
     fn operate_func(&self) -> OperateFn;
