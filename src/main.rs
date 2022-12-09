@@ -5,20 +5,28 @@ use aoc_2022::{
     solutions::{
         day1::{Day1Part1, Day1Part2},
         day2::{Day2Part1, Day2Part2},
-        day3::{Day3Part1, Day3Part2}, day4::{Day4Part1, Day4Part2},
+        day3::{Day3Part1, Day3Part2},
+        day4::{Day4Part1, Day4Part2},
     },
 };
 
 fn main() {
-    day_n(1, &Day1Part1 {}, &Day1Part2 {});
-    day_n(2, &Day2Part1 {}, &Day2Part2 {});
-    day_n(3, &Day3Part1 {}, &Day3Part2 {});
-    day_n(4, &Day4Part1 {}, &Day4Part2 {});
+    let days: Vec<Vec<&dyn Solution>> = vec![
+        vec![&Day1Part1 {}, &Day1Part2 {}],
+        vec![&Day2Part1 {}, &Day2Part2 {}],
+        vec![&Day3Part1 {}, &Day3Part2 {}],
+        vec![&Day4Part1 {}, &Day4Part2 {}],
+    ];
+
+    for (i, parts) in days.iter().enumerate() {
+        day_n((i + 1) as i32, parts.to_vec());
+    }
 }
 
-fn day_n(n: i32, part1: &dyn Solution, part2: &dyn Solution) {
+fn day_n(n: i32, parts: Vec<&dyn Solution>) {
     let input = fs::read_to_string(format!("data/day{}.txt", n)).expect("read failed");
-    part1.run(&input);
-    part2.run(&input);
-}
 
+    for (i, part) in parts.iter().enumerate() {
+        println!("result of Day {} Part {} is: {}", n, i, part.run(&input));
+    }
+}

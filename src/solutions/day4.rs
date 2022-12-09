@@ -36,17 +36,23 @@ fn be_overlap(line: &String) -> bool {
 }
 
 impl Solution for Day4Part1 {
-    fn run(&self, input: &String) {
-        let count = input.lines().map(|x| be_fully_contained(&String::from(x))).filter(|x| *x).count();
-        println!("result of day 4 part 1 is: {}", count);
+    fn run(&self, input: &String) -> i32 {
+        input
+            .lines()
+            .map(|x| be_fully_contained(&String::from(x)))
+            .filter(|x| *x)
+            .count() as i32
     }
 }
 
 pub struct Day4Part2 {}
 
 impl Solution for Day4Part2 {
-    fn run(&self, input: &String) {
-        let count = input.lines().map(|x| be_overlap(&String::from(x))).filter(|x| *x).count();
-        println!("result of day 4 part 2 is: {}", count);
+    fn run(&self, input: &String) -> i32 {
+        input
+            .lines()
+            .map(|x| be_overlap(&String::from(x)))
+            .filter(|x| *x)
+            .count() as i32
     }
 }

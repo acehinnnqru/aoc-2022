@@ -36,14 +36,14 @@ impl Day3Part1 {
             let c = find_same_char(&cs);
             total += priorities(c);
         }
+
         total
     }
 }
 
 impl Solution for Day3Part1 {
-    fn run(&self, input: &String) {
-        let ret = self.process(input.lines());
-        println!("result of day 3 part 1 is: {}", ret);
+    fn run(&self, input: &String) -> i32 {
+        self.process(input.lines())
     }
 }
 
@@ -81,8 +81,7 @@ impl Day3Part2 {
 }
 
 impl Solution for Day3Part2 {
-    fn run(&self, input: &String) {
-        let ret = self.process(input.lines());
-        println!("result of day 3 part 2 is: {}", ret);
+    fn run(&self, input: &String) -> i32 {
+        self.process(input.lines())
     }
 }
