@@ -52,6 +52,23 @@ impl TrieNode {
         Ok(())
     }
 
+    fn closest_size_to_target(&self, target: i32) -> i32 {
+        let mut closest = self.val.clone();
+        self.find_closest_to_target(&mut closest, target);
+
+        closest
+    }
+
+    fn find_closest_to_target(&self, closest: &mut i32, target: i32) {
+        if self.val >= target && self.val < *closest {
+            *closest = self.val;
+        }
+
+        for child in self.childs.values().filter(|x| x.is_dir) {
+            child.find_closest_to_target(closest, target);
+        }
+    }
+
     fn sum_less_than_size(&self, limit: i32) -> i32 {
         let mut s = 0;
         for child in self.childs.values().filter(|x| x.is_dir) {
@@ -117,8 +134,7 @@ impl FileBrowser {
             let filesize = splits.next().unwrap().parse::<i32>().unwrap();
             let filename = splits.next().unwrap();
 
-            self.files
-                .insert(self.get_cwd() + "/" + filename, filesize);
+            self.files.insert(self.get_cwd() + "/" + filename, filesize);
             let mut x = self.dir_stack.clone();
             x.push(filename.to_string());
 
@@ -126,6 +142,14 @@ impl FileBrowser {
         }
 
         lines.clear();
+    }
+
+    fn sum(&self) -> i32 {
+        self.tree.val
+    }
+
+    fn closest_size_to_target(&self, target: i32) -> i32 {
+        self.tree.closest_size_to_target(target)
     }
 
     fn sum_less_than_size(&self, limit: i32) -> i32 {
@@ -153,7 +177,7 @@ fn command(line: &str) -> Command {
     Command::Output(line.to_string())
 }
 
-fn decode(lines: Lines) -> i32 {
+fn decode(lines: Lines) -> FileBrowser {
     let mut fb = FileBrowser::new();
 
     let mut temp: Vec<String> = vec![];
@@ -173,13 +197,23 @@ fn decode(lines: Lines) -> i32 {
     }
     fb.list(&mut temp);
 
-    fb.sum_less_than_size(100000)
+    fb
 }
 
 pub struct Day7Part1 {}
 
 impl Solution for Day7Part1 {
     fn run(&self, input: &str) -> String {
-        decode(input.lines()).to_string()
+        decode(input.lines()).sum_less_than_size(100000).to_string()
+    }
+}
+
+pub struct Day7Part2 {}
+
+impl Solution for Day7Part2 {
+    fn run(&self, input: &str) -> String {
+        let fb = decode(input.lines());
+        let target = 30000000 - 70000000 + fb.sum();
+        fb.closest_size_to_target(target).to_string()
     }
 }
