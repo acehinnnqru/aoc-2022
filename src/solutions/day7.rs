@@ -36,7 +36,7 @@ impl TrieNode {
         let child = self
             .childs
             .entry(k)
-            .or_insert(Box::new(TrieNode::new(0, true)));
+            .or_insert_with(|| Box::new(TrieNode::new(0, true)));
         let increment = child.push(&paths[1..], val);
         self.val += increment;
 
@@ -44,10 +44,7 @@ impl TrieNode {
     }
 
     fn fmt_r(&self, f: &mut std::fmt::Formatter<'_>, level: usize) -> std::fmt::Result {
-        write!(f, ":{}\n", self.val).unwrap();
-        // if level > 1 {
-        //     return Ok(());
-        // }
+        writeln!(f, ":{}", self.val).unwrap();
         for (k, v) in self.childs.iter() {
             write!(f, "{}{}", "-".repeat(level), k).unwrap();
             v.fmt_r(f, level + 1).unwrap();
@@ -93,7 +90,7 @@ impl FileBrowser {
     fn get_cwd(&self) -> String {
         let cwd = self.dir_stack.join("/");
         let cwd = format!("/{}", cwd);
-        cwd.to_string()
+        cwd
     }
 
     fn cd(&mut self, path: &str) {
@@ -116,12 +113,12 @@ impl FileBrowser {
                 continue;
             }
 
-            let mut splits = line.split_whitespace().into_iter();
+            let mut splits = line.split_whitespace();
             let filesize = splits.next().unwrap().parse::<i32>().unwrap();
             let filename = splits.next().unwrap();
 
             self.files
-                .insert(self.get_cwd() + "/" + &filename.to_string(), filesize);
+                .insert(self.get_cwd() + "/" + filename, filesize);
             let mut x = self.dir_stack.clone();
             x.push(filename.to_string());
 
@@ -138,22 +135,22 @@ impl FileBrowser {
 
 enum Command {
     CD(String),
-    LS,
-    OUTPUT(String),
+    Ls,
+    Output(String),
 }
 
 fn command(line: &str) -> Command {
-    let real = line.trim_start_matches("$").trim();
+    let real = line.trim_start_matches('$').trim();
     if real.starts_with("cd") {
         let splits = real.split_whitespace();
         return Command::CD(splits.last().unwrap().to_string());
     }
 
     if real.starts_with("ls") {
-        return Command::LS;
+        return Command::Ls;
     }
 
-    Command::OUTPUT(line.to_string())
+    Command::Output(line.to_string())
 }
 
 fn decode(lines: Lines) -> i32 {
@@ -166,10 +163,10 @@ fn decode(lines: Lines) -> i32 {
                 fb.list(&mut temp);
                 fb.cd(&path);
             }
-            Command::LS => {
+            Command::Ls => {
                 fb.list(&mut temp);
             }
-            Command::OUTPUT(x) => {
+            Command::Output(x) => {
                 temp.push(x);
             }
         }
