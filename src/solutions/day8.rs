@@ -7,6 +7,7 @@ type VisibleMap = HashMap<usize, HashMap<usize, Visible>>;
 pub struct Grid {
     data: Vec<Vec<usize>>,
     visible_map: VisibleMap,
+    view_trees_map: ViewTreesMap,
     rows: usize,
     columns: usize,
 }
@@ -31,28 +32,41 @@ impl Visible {
     fn visible(&self) -> bool {
         self.up || self.down || self.left || self.right
     }
-
-    fn invisible(&self) -> bool {
-        !self.visible()
-    }
 }
 
-fn view_through(line: &mut Vec<(usize, &mut bool)>) {
-    let mut premax = line.first().unwrap().0;
-    for i in 1..line.len() {
-        if line[i].0 > premax {
-            *line[i].1 = true;
-            premax = line[i].0;
+struct ViewTrees {
+    left: usize,
+    right: usize,
+    up: usize,
+    down: usize,
+}
+
+impl ViewTrees {
+    fn new() -> Self {
+        ViewTrees {
+            left: 0,
+            right: 0,
+            up: 0,
+            down: 0,
         }
     }
+
+    fn score(&self) -> usize {
+        self.left * self.right * self.up * self.down
+    }
 }
 
-fn get_mut_visible_obj(m: &mut VisibleMap, i: usize, j: usize) -> &mut Visible {
-    m.get_mut(&i).unwrap().get_mut(&j).unwrap()
-}
+type ViewTreesMap = HashMap<usize, HashMap<usize, ViewTrees>>;
 
-fn get_visible_obj(m: &VisibleMap, i: usize, j: usize) -> &Visible {
-    m.get(&i).unwrap().get(&j).unwrap()
+fn count_until_taller(l: Vec<usize>, target: usize) -> usize {
+    let mut count = 0;
+    for i in (0..l.len()).rev() {
+        count += 1;
+        if l[i] >= target {
+            break;
+        }
+    }
+    count
 }
 
 impl Grid {
@@ -60,6 +74,7 @@ impl Grid {
         let mut grid = Grid {
             data: Vec::<Vec<usize>>::new(),
             visible_map: HashMap::<_, _>::new(),
+            view_trees_map: HashMap::<_, _>::new(),
             rows: 0,
             columns: 0,
         };
@@ -82,74 +97,144 @@ impl Grid {
         self.columns = self.data.first().unwrap().len();
     }
 
-    fn init_visible_map(&mut self) {
+    fn init_map(&mut self) {
         self.visible_map.clear();
+        self.view_trees_map.clear();
         for (i, row) in self.data.iter().enumerate() {
-            let rowm = self.visible_map.entry(i).or_insert(HashMap::<_, _>::new());
+            let row_vm = self.visible_map.entry(i).or_default();
+            let row_vtm = self.view_trees_map.entry(i).or_default();
             row.iter().enumerate().for_each(|(i, _)| {
-                rowm.insert(i, Visible::new());
+                row_vm.insert(i, Visible::new());
+                row_vtm.insert(i, ViewTrees::new());
             });
         }
     }
 
+    // View visible rule:
+    //   1. edge tree is must visible
+    //   2. if tree is shorter than premax, it is invisible
+    //
+    // Viewable pre trees count rule:
+    //   1. edge tree can't see any tree from a direction, edge = 0
+    //   2. when current tree is taller than previous, current = previous + 1
+    //   3. if current tree is at most tall as previous, current = 1
     fn build_visible_map(&mut self) {
-        self.init_visible_map();
+        self.init_map();
 
+        // left to right
         for i in 0..self.rows {
-            let mut premax = self.data[i][0];
+            let first = self.data[i][0];
+            let mut premax = first;
+            let mut prevec = vec![first];
+
             for j in 0..self.columns {
                 let v = self.visible_map.get_mut(&i).unwrap().get_mut(&j).unwrap();
+                let vt = self
+                    .view_trees_map
+                    .get_mut(&i)
+                    .unwrap()
+                    .get_mut(&j)
+                    .unwrap();
                 if j == 0 {
                     v.left = true;
+                    vt.left = 0;
                     continue;
                 }
-                if self.data[i][j] > premax {
+                let curheight = self.data[i][j];
+                if curheight > premax {
                     v.left = true;
                     premax = self.data[i][j];
                 }
-            }
-        }
-        for i in 0..self.rows {
-            let mut premax = self.data[i][self.columns - 1];
-            for j in (0..self.columns).rev() {
-                let v = self.visible_map.get_mut(&i).unwrap().get_mut(&j).unwrap();
-                if j == self.columns - 1 {
-                    v.right = true;
-                    continue;
-                }
-                if self.data[i][j] > premax {
-                    v.right = true;
-                    premax = self.data[i][j];
-                }
+
+                vt.left = count_until_taller(prevec.clone(), curheight);
+                prevec.push(curheight);
             }
         }
 
-        for j in 0..self.columns {
-            let mut premax = self.data[0][j];
-            for i in 0..self.rows {
+        // right to left
+        for i in 0..self.rows {
+            let first = self.data[i][self.columns - 1];
+            let mut premax = first;
+            let mut prevec = vec![first];
+            for j in (0..self.columns).rev() {
                 let v = self.visible_map.get_mut(&i).unwrap().get_mut(&j).unwrap();
-                if i == 0 {
-                    v.up = true;
+                let vt = self
+                    .view_trees_map
+                    .get_mut(&i)
+                    .unwrap()
+                    .get_mut(&j)
+                    .unwrap();
+                if j == self.columns - 1 {
+                    v.right = true;
+                    vt.right = 0;
                     continue;
                 }
-                if self.data[i][j] > premax {
+                let curheight = self.data[i][j];
+                if curheight > premax {
                     v.right = true;
-                    premax = self.data[i][j];
+                    premax = curheight;
                 }
+
+                vt.right = count_until_taller(prevec.clone(), curheight);
+                prevec.push(curheight);
             }
         }
+
+        // up to down
         for j in 0..self.columns {
-            let mut premax = self.data[self.columns - 1][j];
-            for i in (0..self.rows).rev() {
+            let first = self.data[0][j];
+            let mut premax = first;
+            let mut prevec = vec![first];
+            for i in 0..self.rows {
                 let v = self.visible_map.get_mut(&i).unwrap().get_mut(&j).unwrap();
-                if i == self.rows - 1 {
-                    v.down = true;
+                let vt = self
+                    .view_trees_map
+                    .get_mut(&i)
+                    .unwrap()
+                    .get_mut(&j)
+                    .unwrap();
+                if i == 0 {
+                    v.up = true;
+                    vt.up = 0;
                     continue;
                 }
-                if self.data[i][j] > premax {
-                    v.down = true;
-                    premax = self.data[i][j];
+                let curheight = self.data[i][j];
+                if curheight > premax {
+                    v.up = true;
+                    premax = curheight;
                 }
+
+                vt.up = count_until_taller(prevec.clone(), curheight);
+                prevec.push(curheight);
+            }
+        }
+
+        // down to up
+        for j in 0..self.columns {
+            let first = self.data[self.rows - 1][j];
+            let mut premax = first;
+            let mut prevec = vec![first];
+            for i in (0..self.rows).rev() {
+                let v = self.visible_map.get_mut(&i).unwrap().get_mut(&j).unwrap();
+                let vt = self
+                    .view_trees_map
+                    .get_mut(&i)
+                    .unwrap()
+                    .get_mut(&j)
+                    .unwrap();
+                if i == self.rows - 1 {
+                    v.down = true;
+                    vt.down = 0;
+                    continue;
+                }
+                let curheight = self.data[i][j];
+                if curheight > premax {
+                    v.down = true;
+                    premax = curheight;
+                }
+
+                vt.down = count_until_taller(prevec.clone(), curheight);
+                prevec.push(curheight);
             }
         }
     }
@@ -158,13 +243,33 @@ impl Grid {
         let mut count = 0;
         for i in 0..self.rows {
             for j in 0..self.columns {
-                if get_visible_obj(&self.visible_map, i, j).visible() {
+                if self.visible_map.get(&i).unwrap().get(&j).unwrap().visible() {
                     count += 1;
                 }
             }
         }
 
         count
+    }
+
+    fn highest_scenic_score(&self) -> usize {
+        let mut highest = 0;
+        for i in 0..self.rows {
+            for j in 0..self.columns {
+                let score = self
+                    .view_trees_map
+                    .get(&i)
+                    .unwrap()
+                    .get(&j)
+                    .unwrap()
+                    .score();
+                if score > highest {
+                    highest = score;
+                }
+            }
+        }
+
+        highest
     }
 }
 
@@ -174,5 +279,14 @@ impl Solution for Day8Part1 {
     fn run(&self, input: &str) -> String {
         let grid = Grid::new(input.lines());
         grid.visible_trees_count().to_string()
+    }
+}
+
+pub struct Day8Part2 {}
+
+impl Solution for Day8Part2 {
+    fn run(&self, input: &str) -> String {
+        let grid = Grid::new(input.lines());
+        grid.highest_scenic_score().to_string()
     }
 }
