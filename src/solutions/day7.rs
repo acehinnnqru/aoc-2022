@@ -53,7 +53,7 @@ impl TrieNode {
     }
 
     fn closest_size_to_target(&self, target: i32) -> i32 {
-        let mut closest = self.val.clone();
+        let mut closest = self.val;
         self.find_closest_to_target(&mut closest, target);
 
         closest
