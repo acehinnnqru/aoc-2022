@@ -19,7 +19,7 @@ fn towin(opponent: &u8) -> u8 {
         b'A' => b'B',
         b'B' => b'C',
         b'C' => b'A',
-        _ => unimplemented!(),
+        _ => unreachable!(),
     }
 }
 
@@ -28,7 +28,7 @@ fn tolose(opponent: &u8) -> u8 {
         b'A' => b'C',
         b'B' => b'A',
         b'C' => b'B',
-        _ => unimplemented!(),
+        _ => unreachable!(),
     }
 }
 
@@ -62,7 +62,7 @@ impl Solution for Day2Part1 {
                 b'X' => b'A',
                 b'Y' => b'B',
                 b'Z' => b'C',
-                _ => unimplemented!(),
+                _ => unreachable!(),
             }
         };
 
@@ -81,7 +81,7 @@ impl Solution for Day2Part2 {
                 b'X' => tolose(x),
                 b'Y' => todraw(x),
                 b'Z' => towin(x),
-                _ => unimplemented!(),
+                _ => unreachable!(),
             }
         };
 

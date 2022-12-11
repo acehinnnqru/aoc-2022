@@ -77,7 +77,7 @@ fn first_packet(buffer: &str, n: usize) -> usize {
         }
     }
 
-    unimplemented!()
+    unreachable!()
 }
 
 pub struct Day6Part1 {}

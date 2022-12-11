@@ -20,7 +20,7 @@ fn find_same_char(chars: &Vec<char>) -> char {
         }
     }
 
-    unimplemented!()
+    unreachable!()
 }
 
 fn priorities(c: char) -> i32 {
@@ -76,7 +76,7 @@ impl Day3 for Day3Part2 {
             update_charset(&group[1..], &mut charset);
 
             if charset.len() > 1 {
-                unimplemented!()
+                unreachable!()
             }
 
             let item = charset.iter().next().unwrap();
