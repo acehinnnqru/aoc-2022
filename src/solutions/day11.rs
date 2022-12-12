@@ -106,7 +106,7 @@ impl Monkey {
 }
 
 struct Game {
-    monkeys: Vec<Box<Monkey>>,
+    monkeys: Vec<Monkey>,
 }
 
 impl Game {
@@ -114,7 +114,7 @@ impl Game {
         Game { monkeys: vec![] }
     }
 
-    fn push(&mut self, monkey: Box<Monkey>) {
+    fn push(&mut self, monkey: Monkey) {
         self.monkeys.push(monkey);
     }
 
@@ -145,7 +145,7 @@ impl Game {
     }
 }
 
-fn build_monkey(chunks: &[String]) -> Box<Monkey> {
+fn build_monkey(chunks: &[String]) -> Monkey {
     let mut iter = chunks.iter();
 
     // let index: usize = iter
@@ -192,7 +192,7 @@ fn build_monkey(chunks: &[String]) -> Box<Monkey> {
     let ftarget: usize = last_number() as usize;
     let tester = Tester::new(test_arg, ttarget, ftarget);
 
-    Box::new(Monkey::new(items, operation, tester))
+    Monkey::new(items, operation, tester)
 }
 
 fn build_game(input: &str) -> Game {
