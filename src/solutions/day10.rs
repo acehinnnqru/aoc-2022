@@ -6,14 +6,16 @@ struct Device {
     ram: i32,
     cycles: Vec<i32>,
     drawing_pos: i32,
+    show_crt: bool,
 }
 
 impl Device {
-    fn new() -> Device {
+    fn new(show_crt: bool) -> Device {
         Device {
             ram: 1,
             cycles: vec![],
             drawing_pos: 0,
+            show_crt,
         }
     }
 
@@ -27,6 +29,10 @@ impl Device {
     }
 
     fn draw(&mut self) {
+        if !self.show_crt {
+            return;
+        }
+
         if (self.drawing_pos - self.ram).abs() <= 1 {
             print!("#");
         } else {
@@ -54,8 +60,11 @@ impl Device {
     }
 }
 
-fn simulate(lines: Lines) -> Device {
-    let mut device = Device::new();
+fn simulate(lines: Lines, show_crt: bool) -> Device {
+    let mut device = Device::new(show_crt);
+    if show_crt {
+        println!();
+    }
     for line in lines {
         let mut splits = line.split_whitespace();
         let command = splits.next().unwrap();
@@ -76,7 +85,7 @@ pub struct Day10Part1 {}
 
 impl Solution for Day10Part1 {
     fn run(&self, input: &str) -> String {
-        let device = simulate(input.lines());
+        let device = simulate(input.lines(), false);
         let c = device.get_cycles();
         let mut s = 0;
         for i in (18..220).step_by(40) {
@@ -90,7 +99,7 @@ pub struct Day10Part2 {}
 
 impl Solution for Day10Part2 {
     fn run(&self, input: &str) -> String {
-        simulate(input.lines());
+        simulate(input.lines(), true);
 
         "".to_string()
     }

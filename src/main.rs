@@ -4,7 +4,7 @@ use aoc_2022::{
     solution::Solution,
     solutions::{
         day1::{Day1Part1, Day1Part2},
-        day10::Day10Part1,
+        day10::{Day10Part1, Day10Part2},
         day2::{Day2Part1, Day2Part2},
         day3::{Day3Part1, Day3Part2},
         day4::{Day4Part1, Day4Part2},
@@ -27,7 +27,7 @@ fn main() {
         vec![&Day7Part1 {}, &Day7Part2 {}],
         vec![&Day8Part1 {}, &Day8Part2 {}],
         vec![&Day9Part1 {}, &Day9Part2 {}],
-        vec![&Day10Part1 {}],
+        vec![&Day10Part1 {}, &Day10Part2 {}],
     ];
 
     days.iter()
@@ -39,11 +39,7 @@ fn day_n(n: i32, parts: Vec<&dyn Solution>) {
     let input = fs::read_to_string(format!("data/day{}.txt", n)).expect("read failed");
 
     parts.iter().enumerate().for_each(|(i, part)| {
-        println!(
-            "Result of Day {} Part {} is: {}",
-            n,
-            i + 1,
-            part.run(&input)
-        )
+        print!("Result of Day {} Part {} is:", n, i + 1);
+        println!("{}", part.run(&input));
     });
 }
