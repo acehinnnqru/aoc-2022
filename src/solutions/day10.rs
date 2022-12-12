@@ -1,3 +1,4 @@
+// TODO: optimize plz
 use std::str::Lines;
 
 use crate::solution::Solution;

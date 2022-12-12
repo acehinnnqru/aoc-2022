@@ -1,3 +1,4 @@
+// TODO: optimize plz
 use std::{
     collections::{HashMap, HashSet},
     str::Lines,
