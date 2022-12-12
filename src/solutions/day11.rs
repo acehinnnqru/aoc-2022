@@ -84,11 +84,11 @@ impl Monkey {
     }
 
     fn pop(&mut self) -> Option<(usize, i32)> {
-        self.inspect();
         if self.is_empty() {
             return None;
         }
 
+        self.inspect();
         let mut item = self.items.pop_front().unwrap();
 
         item = self.operation.execute(item);
@@ -147,6 +147,7 @@ impl Game {
             for (target, item) in waiting_list {
                 self.monkeys[target].push(item)
             }
+
         }
     }
 }
@@ -154,20 +155,25 @@ impl Game {
 fn build_monkey(chunks: &[String]) -> Monkey {
     let mut iter = chunks.iter();
 
-    // let index: usize = iter
-    //     .next()
-    //     .unwrap()
-    //     .trim_end_matches(':')
-    //     .trim_start_matches("Monkey")
-    //     .parse()
-    //     .unwrap();
-
-    let items: VecDeque<i32> = iter
+    let _index: usize = iter
         .next()
         .unwrap()
-        .trim_start_matches("Starting items:")
+        .trim_end_matches(':')
+        .trim_start_matches("Monkey")
         .trim()
+        .parse()
+        .unwrap();
+
+    let items = iter
+        .next()
+        .unwrap()
+        .trim()
+        .split_terminator(':')
+        .rev()
+        .next()
+        .unwrap()
         .split_terminator(&[',', ' '])
+        .filter(|x| !x.is_empty())
         .map(|x| x.parse::<i32>().unwrap())
         .collect();
 
@@ -217,7 +223,16 @@ fn simulate_part1(input: &str, rounds: usize) -> usize {
     let mut g = build_game(input);
     g.run(rounds);
 
-    g.get_monkeys().iter().map(|x| x.inspect_times()).sum()
+    let mut max1 = 0;
+    let mut max2 = 0;
+    g.get_monkeys().iter().map(|x| x.inspect_times()).for_each(|t|{
+        if t > max1 || t > max2 {
+            max1 = max1.max(max2);
+            max2 = t;
+        }
+    });
+
+    max1 * max2
 }
 
 pub struct Day11Part1 {}
