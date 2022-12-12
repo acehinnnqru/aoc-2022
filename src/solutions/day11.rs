@@ -1,5 +1,7 @@
 use std::collections::VecDeque;
 
+use crate::solution::Solution;
+
 enum OperationType {
     Plus,
     Multi,
@@ -114,6 +116,10 @@ impl Game {
         Game { monkeys: vec![] }
     }
 
+    fn get_monkeys(&self) -> &Vec<Monkey> {
+        &self.monkeys
+    }
+
     fn push(&mut self, monkey: Monkey) {
         self.monkeys.push(monkey);
     }
@@ -205,4 +211,19 @@ fn build_game(input: &str) -> Game {
     });
 
     game
+}
+
+fn simulate_part1(input: &str, rounds: usize) -> usize {
+    let mut g = build_game(input);
+    g.run(rounds);
+
+    g.get_monkeys().iter().map(|x| x.inspect_times()).sum()
+}
+
+pub struct Day11Part1 {}
+
+impl Solution for Day11Part1 {
+    fn run(&self, input: &str) -> String {
+        simulate_part1(input, 20).to_string()
+    }
 }

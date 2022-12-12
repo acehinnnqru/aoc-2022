@@ -5,6 +5,7 @@ use aoc_2022::{
     solutions::{
         day1::{Day1Part1, Day1Part2},
         day10::{Day10Part1, Day10Part2},
+        day11::Day11Part1,
         day2::{Day2Part1, Day2Part2},
         day3::{Day3Part1, Day3Part2},
         day4::{Day4Part1, Day4Part2},
@@ -28,6 +29,7 @@ fn main() {
         vec![&Day8Part1 {}, &Day8Part2 {}],
         vec![&Day9Part1 {}, &Day9Part2 {}],
         vec![&Day10Part1 {}, &Day10Part2 {}],
+        vec![&Day11Part1 {}],
     ];
 
     days.iter()
