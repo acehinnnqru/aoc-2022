@@ -137,12 +137,8 @@ impl Game {
             }
 
             let mut waiting_list = vec![];
-            loop {
-                if let Some(x) = monkey.pop() {
-                    waiting_list.push(x);
-                } else {
-                    break;
-                }
+            while let Some(x) = monkey.pop() {
+                waiting_list.push(x);
             }
 
             for (target, item) in waiting_list {
