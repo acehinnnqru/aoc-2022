@@ -235,7 +235,7 @@ fn print_knots(knots: &Vec<Knot>, index: bool) {
             }
             print!(".");
         }
-        println!("");
+        println!();
     }
     println!("{}", "<".repeat((ymax - ymin + 1) as usize));
 }
