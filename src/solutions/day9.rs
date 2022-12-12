@@ -32,12 +32,66 @@ impl Knot {
         self.x += 1;
     }
 
+    fn follow(&mut self, knot: &Knot) {
+        if self.do_nothing(knot) {
+            return;
+        }
+
+        if self.is_in_row(knot) {
+            self.align_x(knot);
+            return;
+        }
+
+        if self.is_in_column(knot) {
+            self.align_y(knot);
+            return;
+        }
+
+        if self.is_far_away(knot) {
+            self.align(knot);
+            return;
+        }
+        unreachable!()
+    }
+
+    fn align(&mut self, knot: &Knot) {
+        self.align_y(knot);
+        self.align_x(knot);
+    }
+
     fn align_y(&mut self, knot: &Knot) {
-        self.y = knot.y
+        if knot.y < self.y {
+            self.step_down();
+            return;
+        } else if knot.y > self.y {
+            self.step_up();
+            return;
+        }
+
+        unreachable!()
     }
 
     fn align_x(&mut self, knot: &Knot) {
-        self.x = knot.x
+        if knot.x < self.x {
+            self.step_left();
+            return;
+        } else if knot.x > self.x {
+            self.step_right();
+            return;
+        }
+        unreachable!()
+    }
+
+    fn is_in_row(&self, knot: &Knot) -> bool {
+        self.y == knot.y
+    }
+
+    fn is_in_column(&self, knot: &Knot) -> bool {
+        self.x == knot.x
+    }
+
+    fn do_nothing(&self, knot: &Knot) -> bool {
+        self.is_overlap(knot) || self.is_touching(knot) || self.is_diagonal(knot)
     }
 
     fn is_overlap(&self, knot: &Knot) -> bool {
@@ -45,8 +99,8 @@ impl Knot {
     }
 
     fn is_touching(&self, knot: &Knot) -> bool {
-        ((self.x - knot.x).abs() == 1 && self.y == knot.y)
-            || (self.x == knot.x && (self.y - knot.y).abs() == 1)
+        ((self.x - knot.x).abs() == 1 && self.is_in_row(knot))
+            || (self.is_in_column(knot) && (self.y - knot.y).abs() == 1)
     }
 
     fn is_diagonal(&self, knot: &Knot) -> bool {
@@ -68,8 +122,6 @@ impl ToString for Knot {
 struct Rope {
     knots: Vec<Knot>,
     tail_visited: Vec<Knot>,
-    // boundary: (xmax, xmin, ymax, ymin)
-    boundary: (i32, i32, i32, i32),
 }
 
 enum Motion {
@@ -84,18 +136,12 @@ impl Rope {
         Rope {
             knots: vec![Knot::new(); count],
             tail_visited: vec![],
-            boundary: (0, 0, 0, 0),
         }
     }
 
     fn simulate(&mut self, motion: Motion, steps: usize) {
         for _ in 0..steps {
-            match motion {
-                Motion::U => self.step_up(),
-                Motion::D => self.step_down(),
-                Motion::L => self.step_left(),
-                Motion::R => self.step_right(),
-            }
+            self.step(&motion);
             self.trace_tail();
             self.print_knots();
         }
@@ -103,20 +149,6 @@ impl Rope {
 
     fn trace_tail(&mut self) {
         let k = self.knots.last().unwrap().clone();
-        {
-            if k.x > self.boundary.0 {
-                self.boundary.0 = k.x + 1;
-            }
-            if k.x < self.boundary.1 {
-                self.boundary.1 = k.x - 1;
-            }
-            if k.y > self.boundary.2 {
-                self.boundary.2 = k.y + 1;
-            }
-            if k.y < self.boundary.3 {
-                self.boundary.3 = k.y - 1;
-            }
-        }
         self.tail_visited.push(k);
     }
 
@@ -140,69 +172,32 @@ impl Rope {
         self.knots[i].is_far_away(&self.knots[i - 1])
     }
 
-    fn align_tail_y(&mut self, i: usize) {
+    fn align_y(&mut self, i: usize) {
         let b = self.knots[i - 1].clone();
         self.knots[i].align_y(&b);
     }
 
-    fn align_tail_x(&mut self, i: usize) {
+    fn align_x(&mut self, i: usize) {
         let b = self.knots[i - 1].clone();
         self.knots[i].align_x(&b);
     }
 
-    fn step_up(&mut self) {
-        self.knots[0].step_up();
-        for i in 1..self.knots.len() {
-            if self.do_nothing(i) {
-                continue;
-            }
-
-            if self.to_be_far_away(i) {
-                self.align_tail_x(i);
-            }
-            self.knots[i].step_up();
-        }
+    fn follow(&mut self, i: usize) {
+        let b = self.knots[i - 1].clone();
+        self.knots[i].follow(&b);
     }
 
-    fn step_down(&mut self) {
-        self.knots[0].step_down();
-        for i in 1..self.knots.len() {
-            if self.do_nothing(i) {
-                continue;
-            }
-
-            if self.to_be_far_away(i) {
-                self.align_tail_y(i);
-            }
-            self.knots[i].step_down();
+    fn step(&mut self, motion: &Motion) {
+        let head = &mut self.knots[0];
+        match motion {
+            Motion::U => head.step_up(),
+            Motion::D => head.step_down(),
+            Motion::L => head.step_left(),
+            Motion::R => head.step_right(),
         }
-    }
 
-    fn step_left(&mut self) {
-        self.knots[0].step_left();
         for i in 1..self.knots.len() {
-            if self.do_nothing(i) {
-                continue;
-            }
-
-            if self.to_be_far_away(i) {
-                self.align_tail_y(i);
-            }
-            self.knots[i].step_left();
-        }
-    }
-
-    fn step_right(&mut self) {
-        self.knots[0].step_right();
-        for i in 1..self.knots.len() {
-            if self.do_nothing(i) {
-                continue;
-            }
-
-            if self.to_be_far_away(i) {
-                self.align_tail_y(i);
-            }
-            self.knots[i].step_right();
+            self.follow(i)
         }
     }
 
@@ -240,13 +235,13 @@ fn print_knots(knots: &Vec<Knot>, index: bool) {
         if knot.x < xmin {
             xmin = knot.x;
         }
-        if knot.x > xmin {
+        if knot.x > xmax {
             xmax = knot.x;
         }
         if knot.y < ymin {
             ymin = knot.y;
         }
-        if knot.y > ymin {
+        if knot.y > ymax {
             ymax = knot.y;
         }
     }
@@ -254,8 +249,9 @@ fn print_knots(knots: &Vec<Knot>, index: bool) {
     ymin -= 3;
     xmax += 3;
     ymax += 3;
-    println!("boundary: {},{},{},{}", xmin, xmax, ymin, ymax);
     println!("{}", ">".repeat((xmax - xmin + 1) as usize));
+    println!("boundary: {},{},{},{}", xmin, xmax, ymin, ymax);
+    println!("{:?}", knots_map);
     for j in (ymin..ymax + 1).rev() {
         for i in xmin..xmax + 1 {
             if i == 0 && j == 0 {
@@ -316,6 +312,6 @@ pub struct Day9Part2 {}
 
 impl Solution for Day9Part2 {
     fn run(&self, input: &str) -> String {
-        simulate(10, input.lines()).to_string()
+        simulate(2, input.lines()).to_string()
     }
 }
