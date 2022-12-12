@@ -1,11 +1,13 @@
 pub mod part1;
 pub mod part2;
 
+#[derive(Clone)]
 enum OperationType {
     Plus,
     Multi,
 }
 
+#[derive(Clone)]
 struct Operation {
     ot: OperationType,
     constant: i32,
@@ -46,13 +48,5 @@ impl Tester {
             ttarget,
             ftarget,
         }
-    }
-
-    fn test(&self, worry_level: i32) -> usize {
-        if worry_level % self.constant == 0 {
-            return self.ttarget;
-        }
-
-        self.ftarget
     }
 }

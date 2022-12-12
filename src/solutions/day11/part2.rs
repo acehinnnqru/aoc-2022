@@ -2,17 +2,43 @@ use std::collections::VecDeque;
 
 use crate::solution::Solution;
 
-use super::{Operation, Tester, OperationType};
+use super::{Operation, OperationType, Tester};
+
+struct Item {
+    val: i32,
+    ops: Vec<Operation>,
+}
+
+impl Item {
+    fn new(val: i32) -> Item {
+        Item {
+            val,
+            ops: vec![],
+        }
+    }
+
+    fn test(&self, arg: i32) -> bool {
+        let mut val = self.val;
+        for op in self.ops.iter() {
+            val = op.execute(val) % arg;
+        }
+        val % arg == 0
+    }
+
+    fn push(&mut self, op: Operation) {
+        self.ops.push(op)
+    }
+}
 
 struct Monkey {
-    items: VecDeque<i32>,
+    items: VecDeque<Item>,
     operation: Operation,
     tester: Tester,
     count: usize,
 }
 
 impl Monkey {
-    fn new(items: VecDeque<i32>, operation: Operation, tester: Tester) -> Monkey {
+    fn new(items: VecDeque<Item>, operation: Operation, tester: Tester) -> Monkey {
         Monkey {
             items,
             operation,
@@ -29,7 +55,7 @@ impl Monkey {
         self.count
     }
 
-    fn pop(&mut self) -> Option<(usize, i32)> {
+    fn pop(&mut self) -> Option<(usize, Item)> {
         if self.is_empty() {
             return None;
         }
@@ -37,18 +63,19 @@ impl Monkey {
         self.inspect();
         let mut item = self.items.pop_front().unwrap();
 
-        item = self.operation.execute(item);
-        item /= 3;
-        let target = self.tester.test(item);
+        item.push(self.operation.clone());
+        if item.test(self.tester.constant) {
+            return Some((self.tester.ttarget, item));
+        }
 
-        Some((target, item))
+        Some((self.tester.ftarget, item))
     }
 
     fn is_empty(&self) -> bool {
         self.items.is_empty()
     }
 
-    fn push(&mut self, item: i32) {
+    fn push(&mut self, item: Item) {
         self.items.push_back(item);
     }
 }
@@ -93,8 +120,13 @@ impl Game {
             for (target, item) in waiting_list {
                 self.monkeys[target].push(item)
             }
-
         }
+
+        // println!(">>>>>>>");
+        // println!(">>>>>>>");
+        // for (i, m) in self.monkeys.iter().enumerate() {
+        //     println!("Monkey {}: {}", i, m.inspect_times());
+        // }
     }
 }
 
@@ -120,7 +152,7 @@ fn build_monkey(chunks: &[String]) -> Monkey {
         .unwrap()
         .split_terminator(&[',', ' '])
         .filter(|x| !x.is_empty())
-        .map(|x| x.parse::<i32>().unwrap())
+        .map(|x| Item::new(x.parse::<i32>().unwrap()))
         .collect();
 
     let mut op_splits = iter.next().unwrap().split_whitespace().rev();
@@ -171,20 +203,23 @@ fn simulate_part1(input: &str, rounds: usize) -> usize {
 
     let mut max1 = 0;
     let mut max2 = 0;
-    g.get_monkeys().iter().map(|x| x.inspect_times()).for_each(|t|{
-        if t > max1 || t > max2 {
-            max1 = max1.max(max2);
-            max2 = t;
-        }
-    });
+    g.get_monkeys()
+        .iter()
+        .map(|x| x.inspect_times())
+        .for_each(|t| {
+            if t > max1 || t > max2 {
+                max1 = max1.max(max2);
+                max2 = t;
+            }
+        });
 
     max1 * max2
 }
 
-pub struct Day11Part1 {}
+pub struct Day11Part2 {}
 
-impl Solution for Day11Part1 {
+impl Solution for Day11Part2 {
     fn run(&self, input: &str) -> String {
-        simulate_part1(input, 20).to_string()
+        simulate_part1(input, 10000).to_string()
     }
 }
