@@ -152,36 +152,6 @@ impl Rope {
         self.tail_visited.push(k);
     }
 
-    fn to_be_overlap(&self, i: usize) -> bool {
-        self.knots[i].is_overlap(&self.knots[i - 1])
-    }
-
-    fn to_be_diagonal(&self, i: usize) -> bool {
-        self.knots[i].is_diagonal(&self.knots[i - 1])
-    }
-
-    fn to_be_touching(&self, i: usize) -> bool {
-        self.knots[i].is_touching(&self.knots[i - 1])
-    }
-
-    fn do_nothing(&self, i: usize) -> bool {
-        self.to_be_overlap(i) || self.to_be_diagonal(i) || self.to_be_touching(i)
-    }
-
-    fn to_be_far_away(&self, i: usize) -> bool {
-        self.knots[i].is_far_away(&self.knots[i - 1])
-    }
-
-    fn align_y(&mut self, i: usize) {
-        let b = self.knots[i - 1].clone();
-        self.knots[i].align_y(&b);
-    }
-
-    fn align_x(&mut self, i: usize) {
-        let b = self.knots[i - 1].clone();
-        self.knots[i].align_x(&b);
-    }
-
     fn follow(&mut self, i: usize) {
         let b = self.knots[i - 1].clone();
         self.knots[i].follow(&b);
@@ -213,6 +183,7 @@ impl Rope {
     fn print_tail_visited_path(&self) {
         print_knots(&self.tail_visited, false)
     }
+
     fn print_knots(&self) {
         print_knots(&self.knots, true)
     }
