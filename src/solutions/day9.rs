@@ -143,7 +143,6 @@ impl Rope {
         for _ in 0..steps {
             self.step(&motion);
             self.trace_tail();
-            self.print_knots();
         }
     }
 
@@ -283,6 +282,6 @@ pub struct Day9Part2 {}
 
 impl Solution for Day9Part2 {
     fn run(&self, input: &str) -> String {
-        simulate(2, input.lines()).to_string()
+        simulate(10, input.lines()).to_string()
     }
 }

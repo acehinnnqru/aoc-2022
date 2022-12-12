@@ -24,7 +24,7 @@ fn main() {
         vec![&Day6Part1 {}, &Day6Part2 {}],
         vec![&Day7Part1 {}, &Day7Part2 {}],
         vec![&Day8Part1 {}, &Day8Part2 {}],
-        vec![&Day9Part2 {}],
+        vec![&Day9Part1 {}, &Day9Part2 {}],
     ];
 
     days.iter()
