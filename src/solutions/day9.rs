@@ -60,26 +60,19 @@ impl Knot {
     }
 
     fn align_y(&mut self, knot: &Knot) {
-        if knot.y < self.y {
-            self.step_down();
-            return;
-        } else if knot.y > self.y {
-            self.step_up();
-            return;
+        match knot.y {
+            y if y < self.y => self.step_down(),
+            y if y > self.y => self.step_up(),
+            _ => unreachable!(),
         }
-
-        unreachable!()
     }
 
     fn align_x(&mut self, knot: &Knot) {
-        if knot.x < self.x {
-            self.step_left();
-            return;
-        } else if knot.x > self.x {
-            self.step_right();
-            return;
-        }
-        unreachable!()
+        match knot.x {
+            x if x < self.x => self.step_left(),
+            x if x > self.x => self.step_right(),
+            _ => unreachable!(),
+        };
     }
 
     fn is_in_row(&self, knot: &Knot) -> bool {
@@ -188,7 +181,7 @@ impl Rope {
     }
 }
 
-fn build_map(knots: &Vec<Knot>) -> HashMap<String, usize> {
+fn build_map(knots: &[Knot]) -> HashMap<String, usize> {
     HashMap::<String, usize>::from_iter(
         knots
             .iter()
