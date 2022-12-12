@@ -60,6 +60,7 @@ struct Monkey {
     items: VecDeque<i32>,
     operation: Operation,
     tester: Tester,
+    count: usize,
 }
 
 impl Monkey {
@@ -68,10 +69,20 @@ impl Monkey {
             items,
             operation,
             tester,
+            count: 0,
         }
     }
 
+    fn inspect(&mut self) {
+        self.count += 1;
+    }
+
+    fn inspect_times(&self) -> usize {
+        self.count
+    }
+
     fn pop(&mut self) -> Option<(usize, i32)> {
+        self.inspect();
         if self.is_empty() {
             return None;
         }
@@ -95,7 +106,7 @@ impl Monkey {
 }
 
 struct Game {
-    monkeys: Vec<Monkey>,
+    monkeys: Vec<Box<Monkey>>,
 }
 
 impl Game {
@@ -103,16 +114,38 @@ impl Game {
         Game { monkeys: vec![] }
     }
 
-    fn push(&mut self, monkey: Monkey) {
+    fn push(&mut self, monkey: Box<Monkey>) {
         self.monkeys.push(monkey);
     }
 
-    fn run(&self) {
-        unimplemented!()
+    fn run(&mut self, rounds: usize) {
+        (0..rounds).for_each(|_| self.run_single_round());
+    }
+
+    fn run_single_round(&mut self) {
+        for i in 0..self.monkeys.len() {
+            let monkey = &mut self.monkeys[i];
+            if monkey.is_empty() {
+                continue;
+            }
+
+            let mut waiting_list = vec![];
+            loop {
+                if let Some(x) = monkey.pop() {
+                    waiting_list.push(x);
+                } else {
+                    break;
+                }
+            }
+
+            for (target, item) in waiting_list {
+                self.monkeys[target].push(item)
+            }
+        }
     }
 }
 
-fn build_monkey(chunks: &[String]) -> Monkey {
+fn build_monkey(chunks: &[String]) -> Box<Monkey> {
     let mut iter = chunks.iter();
 
     // let index: usize = iter
@@ -159,7 +192,7 @@ fn build_monkey(chunks: &[String]) -> Monkey {
     let ftarget: usize = last_number() as usize;
     let tester = Tester::new(test_arg, ttarget, ftarget);
 
-    Monkey::new(items, operation, tester)
+    Box::new(Monkey::new(items, operation, tester))
 }
 
 fn build_game(input: &str) -> Game {
