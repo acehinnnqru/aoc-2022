@@ -16,6 +16,9 @@ pub struct Question {
 }
 
 impl Question {
+    fn run_part1(&self) {
+        self.solution.run_part1(self.solution.process(&self.datafile));
+    }
     fn run(&self) {
         self.solution.run(self.solution.process(&self.datafile));
     }
@@ -25,23 +28,14 @@ impl Question {
     }
 }
 
-pub struct Config {
-    _custom: HashMap<String, bool>,
-}
-
-impl Config {
-    fn push(&mut self, k: String, v: bool) {
-        self._custom.insert(k, v);
-    }
-
-    fn get(&self, k: &str) -> &bool {
-        self._custom.get(k).unwrap()
-    }
-}
+type SolutionFn = fn(data: Box<dyn Any>) -> String;
+type ProcessFn = fn(path: &str) -> Box<dyn Any>;
 
 pub trait Solution {
-    fn run(&self, data: Box<dyn Any>) -> String;
+    fn part1(&self) -> SolutionFn;
 
-    fn process(&self, path: &str) -> Box<dyn Any>;
+    fn part2(&self) -> SolutionFn;
+
+    fn process(&self) -> ProcessFn;
 }
 
